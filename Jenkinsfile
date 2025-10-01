@@ -21,14 +21,26 @@ pipeline {
         }
 
         stage('Push to DockerHub') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | docker login -u vishva203 --password-stdin'
-                    sh 'docker tag flask-jenkins-demo vishva203/flask-jenkins-demo:latest'
-                    sh 'docker push vishva203/flask-jenkins-demo:latest'
-                }
-            }
-        }
+			steps {
+				// Use username + password credentials in Jenkins
+				withCredentials([usernamePassword(credentialsId: 'docker-cred', 
+												usernameVariable: 'DOCKER_USER', 
+												passwordVariable: 'DOCKER_PASS')]) {
+					sh '''
+						# Login to DockerHub securely
+						echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+						
+						# Tag the image
+						docker tag flask-jenkins-demo $DOCKER_USER/flask-jenkins-demo:latest
+						
+						# Push to DockerHub
+						docker push $DOCKER_USER/flask-jenkins-demo:latest
+					'''
+				}
+			}
+			
+		}
+
 
         stage('Deploy') {
             steps {
