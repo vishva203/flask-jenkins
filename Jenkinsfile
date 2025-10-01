@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main',url: 'https://github.com/<your-username>/flask-jenkins-demo.git'
+                git branch: 'main',url: 'https://github.com/vishva203/flask-jenkins.git'
             }
         }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u vishva203 --password-stdin'
-                    sh 'docker tag flask-jenkins-demo <your-dockerhub-username>/flask-jenkins-demo:latest'
+                    sh 'docker tag flask-jenkins-demo vishva203/flask-jenkins-demo:latest'
                     sh 'docker push vishva203/flask-jenkins-demo:latest'
                 }
             }
